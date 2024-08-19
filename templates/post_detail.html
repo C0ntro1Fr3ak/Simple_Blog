@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	{{ object.title }}
+{% endblock %}
+{% block content %}
+    <a href="{% url 'post_update' post.id %}">Update Post</a>
+	<h1>{{ object.title }}</h1>
+    <p>{{ object.content }}</p>
+    <p>{{ object.category }}</p>
+    <p>{{ object.created_at }}</p>
+    <p>{{ object.updated_at }}</p>
+{% endblock %} 
