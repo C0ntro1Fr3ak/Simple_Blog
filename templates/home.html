@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
 	<h1>Welcome to my blog</h1>
-    <a href="{% url 'post_create' %}">Create Post</a>
+    <a class="btn btn-success" href="{% url 'post_create' %}">Create Post</a>
     <ul>
     {% for post in object_list %}
     	<li>
