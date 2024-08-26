@@ -4,11 +4,16 @@
 	{{ object.title }}
 {% endblock %}
 {% block content %}
-    <a class="btn btn-success" href="{% url 'post_update' post.id %}">Update Post</a>
-    <a class="btn btn-danger" href="{% url 'post_delete' post.id %}">Delete Post</a>
+    {% if user.is_authenticated %}
+        {% if user == post.author %}
+            <a class="btn btn-success" href="{% url 'post_update' post.id %}">Update Post</a>
+            <a class="btn btn-danger" href="{% url 'post_delete' post.id %}">Delete Post</a>
+        {% endif %}
+    {% endif %}
 	<h1>{{ object.title }}</h1>
     <p>{{ object.content }}</p>
     <p>{{ object.category }}</p>
     <p>{{ object.created_at }}</p>
     <p>{{ object.updated_at }}</p>
+    <p>{{ object.author }}</p>
 {% endblock %} 
