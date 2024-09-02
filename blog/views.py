@@ -1,9 +1,10 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect
 from blog.forms import CreateForm
-from blog.models import Post, Category
+from blog.models import Post, Category, Profile
 
 
 # Create your views here.
@@ -64,3 +65,20 @@ def likes_or_not(request):
         else:
             post.likes.add(request.user)
         return redirect('post_detail', pk=post.id)
+
+
+class ProfileView(DetailView):
+    model = User
+    template_name = 'profile.html'
+
+
+def create_profile(request):
+    if request.method == 'GET':
+        return render(request, template_name='create_profile.html')
+    phone = request.POST.get('phone')
+    address = request.POST.get('address')
+    github = request.POST.get('github')
+    email = request.POST.get('email')
+    user = User.objects.get(id=request.user.id)
+    Profile.objects.create(user=user, phone=phone, address=address,email=email, github=github)
+    return render(request, template_name='profile.html', context={'object': user})
