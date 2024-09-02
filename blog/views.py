@@ -52,3 +52,13 @@ class PostDeleteView(DeleteView):
     def get_success_url(self):
         return reverse_lazy('home')
 
+
+def likes_or_not(request):
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        post = Post.objects.get(id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
+        return reverse_lazy('post_detail', args=[post_id])
