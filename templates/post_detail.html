@@ -1,19 +1,35 @@
 {% extends 'base.html' %}
-
 {% block title %}
-	{{ object.title }}
+    {{ object.title }}
 {% endblock %}
 {% block content %}
-    {% if user.is_authenticated %}
-        {% if user == post.author %}
-            <a class="btn btn-success" href="{% url 'post_update' post.id %}">Update Post</a>
-            <a class="btn btn-danger" href="{% url 'post_delete' post.id %}">Delete Post</a>
-        {% endif %}
-    {% endif %}
-	<h1>{{ object.title }}</h1>
+    <h1>{{ object.title }}</h1>
     <p>{{ object.content }}</p>
     <p>{{ object.category }}</p>
     <p>{{ object.created_at }}</p>
     <p>{{ object.updated_at }}</p>
-    <p>{{ object.author }}</p>
-{% endblock %} 
+
+    {% if user.is_authenticated %}
+        {% if user != object.author %}
+            <a class="btn btn-success" href="{% url 'post_update' post.id %}">Update Post</a>
+            <a class="btn btn-danger" href="{% url 'post_delete' post.id %}">Delete Post</a>
+            <form method="post" action="{% url 'likes_or_not' %}">
+            {% csrf_token %}
+                <input name="post_id" type="hidden" value="{{ object.id }}">
+                {% if user in object.likes.all %}
+                    <button type="submit" class="btn btn-danger">
+                        Unlike
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary">
+                        Like
+                    </button>
+                {% endif %}
+            </form>
+        {% endif %}
+    {% endif %}
+
+    <a href="{% url 'home' %}">
+        Back
+    </a>
+{% endblock %}

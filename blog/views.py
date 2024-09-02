@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-
+from django.shortcuts import redirect
 from blog.forms import CreateForm
 from blog.models import Post, Category
 
@@ -22,19 +22,21 @@ class PostCreateView(CreateView):
     model = Post
     template_name = 'post_create.html'
     form_class = CreateForm
-    #fields = ['title', 'content', 'category']
+    # fields = ['title', 'content', 'category']
+
 
 def create_post(request):
     if request.method == 'GET': categories = Category.objects.all()
     return render(request, 'post_create_function.html', {'categories': categories})
     title = request.POST.get('title')
     content = request.POST.get('title')
-    category_id  = request.POST.get('category_id')
+    category_id = request.POST.get('category_id')
     category = request.POST.get('category')
     author_id = request.POST.get('author_id')
     author = request.POST.get('author')
     Post.objects.create(title=title, content=content, category=category, author=author)
     return render(request, 'post_create_function.html')
+
 
 class PostUpdateView(UpdateView):
     model = Post
@@ -61,4 +63,4 @@ def likes_or_not(request):
             post.likes.remove(request.user)
         else:
             post.likes.add(request.user)
-        return reverse_lazy('post_detail', args=[post_id])
+        return redirect('post_detail', pk=post.id)
