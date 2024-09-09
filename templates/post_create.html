@@ -6,6 +6,7 @@
     <h1>Post Create</h1>
     <form method="post">
         {% csrf_token %}
+            {{ form.media }}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">
             Create

@@ -6,19 +6,20 @@
 {% block content %}
     {% if user.is_authenticated %}
         <h1>Create Post</h1>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+        {{ form.media }}
             <p>Title:<input name="title" type="text" class="form-control"></p>
             <p>Content:<textarea name="content" class="form-control"></textarea></p>
-            <select name="category">
+            <select name="category_id">
                 {% for category in categories %}
                 <option value="{{ category.id }}" class="form-control">{{ category.name }}</option>
                 {% endfor %}
-            <p>Author:<input name="author" type="hidden" value="{{ user.id }}" class="form-control"></p>
+            <p>Author:<input name="author_id" type="hidden" value="{{ user.id }}" class="form-control"></p>
 
             </select>
 
-
+            Image: <input name="image" type="file">
 
             <button type="submit" class="btn btn-primary">
                 Create

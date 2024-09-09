@@ -17,7 +17,7 @@
             <li>
                 <div class="post-item">
                     <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
-                    <p>{{ post.content }}</p>
+                    <p>{{ post.content | safe }}</p>
                     <p>{{ post.category }}</p>
                     <p>{{ post.created_at }}</p>
                     <p>{{ post.updated_at }}</p>

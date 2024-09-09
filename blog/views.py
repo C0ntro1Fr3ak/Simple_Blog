@@ -29,21 +29,23 @@ class PostCreateView(CreateView):
 
 
 def create_post(request):
-    if request.method == 'GET': categories = Category.objects.all()
-    return render(request, 'post_create_function.html', {'categories': categories})
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        return render(request, 'post_create_function.html', {'categories': categories})
     title = request.POST.get('title')
     content = request.POST.get('title')
     category_id = request.POST.get('category_id')
-    category = request.POST.get('category')
+    category = Category.objects.get(id=category_id)
     author_id = request.POST.get('author_id')
-    author = request.POST.get('author')
-    Post.objects.create(title=title, content=content, category=category, author=author)
+    author = User.objects.get(id=author_id)
+    image = request.FILES.get('image')
+    Post.objects.create(title=title, content=content, category=category, author=author, image=image)
     return render(request, 'post_create_function.html')
 
 
 class PostUpdateView(UpdateView):
     model = Post
-    fields = ['title', 'content', 'category']
+    fields = ['title', 'content', 'category', 'image']
     template_name = 'post_update.html'
 
     def get_success_url(self):
