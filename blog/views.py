@@ -1,3 +1,4 @@
+import pandas as pd
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -82,3 +83,69 @@ def create_profile(request):
     user = User.objects.get(id=request.user.id)
     Profile.objects.create(user=user, phone=phone, address=address,email=email, github=github)
     return render(request, template_name='profile.html', context={'object': user})
+
+def register_user(request):
+    if request.method == 'GET':
+        return render(request, 'register.html')
+    username = request.POST.get('username')
+    if username in User.objects.values_list('username', flat=True):
+        return render(request, 'register.html',
+                      {'error': 'Username already exists'})
+    email = request.POST.get('email')
+    password1 = request.POST.get('password1')
+    password2 = request.POST.get('password2')
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    if password1 != password2:
+        return render(request, 'register.html',
+                      {'error': 'Passwords do not match'})
+    if User.objects.create_user(username=username, email=email,
+                                first_name=first_name,
+                                last_name=last_name):
+        user = User.objects.get(username=username)
+        user.set_password(password1)
+        user.save()
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        github = request.POST.get('github')
+        Profile.objects.create(user=user,
+                               phone=phone,
+                               address=address,
+                               github=github)
+        return render(request, 'registration/login.html')
+    else:
+        return render(request, 'register.html',
+                      {'error': 'Something went wrong'})
+
+
+def load_user_from_file(request):
+    if request.method == 'GET':
+        return render(request, 'load_user_from_file.html')
+    file = request.FILES.get('users_file')
+    print(file)
+    if file:
+        excel_file = pd.read_excel(file)
+        data = pd.DataFrame(excel_file)
+        usernames = data['Username'].values.tolist()
+        first_names = data['First Name'].values.tolist()
+        last_names = data['Last Name'].values.tolist()
+        emails = data['Email'].values.tolist()
+        dobs = data['DoB'].values.tolist()
+        phones = data['Phone'].values.tolist()
+        addresses = data['Address'].values.tolist()
+        githubs = data['Github'].values.tolist()
+        for i in range(len(usernames)):
+            print("user", i)
+            username = usernames[i]
+            first_name = first_names[i]
+            last_name = last_names[i]
+            email = emails[i]
+            dob = dobs[i]
+            print(dob)
+            phone = phones[i]
+            address = addresses[i]
+            github = githubs[i]
+            print(username)
+            print(first_name)
+            print(str(pd.to_datetime(dob, utc=True).date()).replace("-", ""))
+        return render(request, 'home.html')
