@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.shortcuts import redirect
 from blog.forms import CreateForm
 from blog.models import Post, Category, Profile
+from blog.utils import create_user_profile
 
 
 # Create your views here.
@@ -81,8 +82,9 @@ def create_profile(request):
     github = request.POST.get('github')
     email = request.POST.get('email')
     user = User.objects.get(id=request.user.id)
-    Profile.objects.create(user=user, phone=phone, address=address,email=email, github=github)
+    Profile.objects.create(user=user, phone=phone, address=address, email=email, github=github)
     return render(request, template_name='profile.html', context={'object': user})
+
 
 def register_user(request):
     if request.method == 'GET':
@@ -108,6 +110,8 @@ def register_user(request):
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         github = request.POST.get('github')
+        create_user_profile(username, password1, first_name, last_name, phone, email, address, github, 3)
+
         Profile.objects.create(user=user,
                                phone=phone,
                                address=address,
@@ -127,8 +131,8 @@ def load_user_from_file(request):
         excel_file = pd.read_excel(file)
         data = pd.DataFrame(excel_file)
         usernames = data['Username'].values.tolist()
-        first_names = data['First Name'].values.tolist()
-        last_names = data['Last Name'].values.tolist()
+        first_names = data['FirstName'].values.tolist()
+        last_names = data['LastName'].values.tolist()
         emails = data['Email'].values.tolist()
         dobs = data['DoB'].values.tolist()
         phones = data['Phone'].values.tolist()
@@ -147,5 +151,6 @@ def load_user_from_file(request):
             github = githubs[i]
             print(username)
             print(first_name)
-            print(str(pd.to_datetime(dob, utc=True).date()).replace("-", ""))
+            password1 = str(pd.to_datetime(dob, utc=True).date()).replace("-", "")
+            create_user_profile(username, password1, first_name, last_name, phone, email, address, github, 1)
         return render(request, 'home.html')
